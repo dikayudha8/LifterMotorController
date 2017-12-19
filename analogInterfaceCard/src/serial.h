@@ -3,6 +3,8 @@
 
 #include "stm32f30x.h"
 
+#define DMA_RX_BUFFER 1
+
 typedef struct{
 
 	char sync1;
@@ -42,7 +44,7 @@ extern int serialRead(serialPort_t *s);
 extern void serialPrint(serialPort_t *s, const char *str);
 extern unsigned char serialAvailable(serialPort_t *s);
 extern void serialProcess(void);
-extern void itoa(int value, char* str, int base);
+extern void itoaCustom(int value, char* str, int base);
 extern void strreverse(char* begin, char* end);
 extern void USART2_Config(void);
 extern void USART3_Config(void);

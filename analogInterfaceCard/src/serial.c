@@ -90,7 +90,7 @@ void USART2_Config(void)
 	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)USART2 + 0x24; //0x04 ;
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)s->rxBuf;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_InitStructure.DMA_BufferSize = 512;
+	DMA_InitStructure.DMA_BufferSize = DMA_RX_BUFFER;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
 	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
@@ -216,7 +216,7 @@ void strreverse(char* begin, char* end)
 		aux=*end, *end--=*begin, *begin++=aux;
 }
 
-void itoa(int value, char* str, int base)
+void itoaCustom(int value, char* str, int base)
 {
 	static char num[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 	char* wstr=str;
