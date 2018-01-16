@@ -8,11 +8,17 @@
 #include "command.h"
 #include "HMIComm.h"
 
+#define REVERSE_PIN GPIO_Pin_7
+#define REVERSE_PORT GPIOB
+
+#define MAX_SPEED 78
+#define MIN_SPEED 1023
 
 typedef struct{
-	HMICommObj *hmi;
+	HMICommObj hmi;
 	uint16_t speedLimit;
 	uint16_t actuatorOutput;
+	uint16_t actuatorOutputRaw;
 	uint16_t encoderRawPos;
 	float encoderPos;
 	uint8_t motorDirection;

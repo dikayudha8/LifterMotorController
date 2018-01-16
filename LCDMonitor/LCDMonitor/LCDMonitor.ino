@@ -10,6 +10,7 @@ void setup() {
 }
 
 void loop() {
+  //display->Test();
   // set the cursor to column 0, line 1
   display->Show();  
   //Serial.println("test");

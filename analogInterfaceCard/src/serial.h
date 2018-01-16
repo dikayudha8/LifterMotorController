@@ -2,7 +2,7 @@
 #define __SERIAL_H_
 
 #include "stm32f30x.h"
-
+#include <string.h>
 #define DMA_RX_BUFFER 1
 
 typedef struct{

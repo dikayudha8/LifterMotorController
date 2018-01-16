@@ -157,7 +157,7 @@ int serialRead(serialPort_t *s) {
 	ch = s->rxBuf[s->rxBufSize - s->rxPos];
 	if (--s->rxPos == 0)
 		s->rxPos = s->rxBufSize;
-
+	//memset(s->rxBuf, 0, sizeof(s->rxBuf)/sizeof(char));
 	return ch;
 }
 
