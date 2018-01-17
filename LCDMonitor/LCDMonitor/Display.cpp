@@ -49,6 +49,8 @@ void Display::Show() {
       lcd->setCursor(0, 0);
       lcd->print("CANCELLED");
       keyIn = 0;
+      calibrationCounter = 0;
+      resetCounter = 0;
       return;
     }
 
@@ -59,6 +61,7 @@ void Display::Show() {
       }
       if (++calibrationCounter > 2) {
         calibrationCounter = 0;
+        resetCounter = 0;
         calibrationMode = DO_CALIBRATION;
         lcd->clear();
         lcd->setCursor(0, 0);
@@ -67,6 +70,7 @@ void Display::Show() {
         lcd->print("BEGINS");
         memset(calibrationLCD, 0, sizeof(calibrationLCD) / sizeof(*calibrationLCD));
         clearLCD = false;
+        desiredPositionTemp = -floatingPointIncrement;
       } else {
         calibrationLCD[calibrationCounter] = '#';
         if (resetCounter == 2) {
@@ -75,19 +79,20 @@ void Display::Show() {
           lcd->setCursor(calibrationCounter - 1, 0);
         }
         lcd->print(calibrationLCD[calibrationCounter]);
-      }
-      if (resetCounter == 0) {
-        resetCounter = 1;
-      }
-      else if (resetCounter == 2) {
-        resetCounter = 0;
-        calibrationMode = RESET_CALIBRATION;
-        calibrationCounter = 0;
-        lcd->clear();
-        lcd->setCursor(0, 0);
-        lcd->print("RESET");
-        lcd->setCursor(0, 1);
-        lcd->print("CALIBRATION");
+
+        if (resetCounter == 0) { 
+          resetCounter = 1;
+        }
+        else if (resetCounter == 2) {
+          resetCounter = 0;
+          calibrationMode = RESET_CALIBRATION;
+          calibrationCounter = 0;
+          lcd->clear();
+          lcd->setCursor(0, 0);
+          lcd->print("RESET");
+          lcd->setCursor(0, 1);
+          lcd->print("CALIBRATION");
+        }
       }
       counter = 0;
     }
@@ -99,6 +104,7 @@ void Display::Show() {
     else if (keyIn != '#' && counter < 2) {
       userInput[counter] = keyIn;
       calibrationCounter = 0;
+      resetCounter = 0;
       ++counter;
       lcd->clear();
     }
@@ -109,6 +115,7 @@ void Display::Show() {
         desiredPositionTemp = (float)(atoi(userInput) - intPart + 1.0f);
       counter = 0;
       calibrationCounter = 0;
+      resetCounter = 0;
     }
     else if (keyIn != '#' && counter > 1) {
       counter = 0;
@@ -117,7 +124,7 @@ void Display::Show() {
       //lcd->clear();
       lcd->setCursor(0, 0);
       lcd->print("MAXIMUM IS 40U");
-
+      resetCounter = 0;
     }
     else if (keyIn == '#' && counter >= 1) {
       if (intPart >= 0.0f)
@@ -127,6 +134,7 @@ void Display::Show() {
       counter = 0;
       memset(userInput, 0, sizeof(userInput) / sizeof(*userInput));
       calibrationCounter = 0;
+      resetCounter = 0;
     }
 
     keyIn = 0;
@@ -138,6 +146,7 @@ void Display::Show() {
 
   } else if (digitalRead(MANUAL_TOGGLE) == HIGH) {
     calibrationCounter = 0;
+    resetCounter = 0;
     if (manualPrintFlag == false) {
       lcd->clear();
       manualPrintFlag = true;
@@ -195,7 +204,7 @@ void Display::Show() {
     desiredPositionTemp = desiredPosition - floatingPointIncrement;// - intPart;
     //desiredPosition = (float)MAXIMUM_HEIGHT;
   }
-  
+
   Serial.print(desiredPosition);
   Serial.print("\t");
   Serial.print(floatingPointIncrement);
@@ -203,7 +212,7 @@ void Display::Show() {
   Serial.print(intPart);
   Serial.print("\t");
   Serial.println(calibrationMode);
-  
+
   //communicate to motor controller by receiving 'a' for synchronization, then send 0xFF 0xXX 0xXX 0xXX 0xXX as 1 header and 4 bytes desired position pressed by user
   if (Serial3.available()) {
     if (Serial3.read() == 'a') {
