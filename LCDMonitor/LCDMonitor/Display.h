@@ -46,5 +46,6 @@ class Display {
     uint8_t calibrationCounter;
     bool resetFlag = false;
     bool clearLCD = false;
+    float maximumDesiredPos = 0;
 };
 

@@ -15,6 +15,8 @@ Display::Display() {
   lcd->begin(16, 2);
   Serial.begin(9600);
   Serial3.begin(115200);
+
+  maximumDesiredPos = MAXIMUM_HEIGHT;
 }
 
 Display::~Display() {
@@ -31,6 +33,7 @@ void Display::Show() {
   uint8_t j;
   char keyIn = userKeypad->ReadUserInput();
   if (digitalRead(MANUAL_TOGGLE) == LOW && keyIn == 0) {
+    //    trimmerValue = analogRead(TRIMMER_CHANNEL) / 250.0f;
     if (manualPrintFlag == true) {
       lcd->clear();
       lcd->setCursor(0, 0);
@@ -41,7 +44,6 @@ void Display::Show() {
 
   if (keyIn != 0 && digitalRead(MANUAL_TOGGLE) == LOW) {
     modf(floatingPointIncrement, &intPart);
-
     if (keyIn == '*') {
       counter = 0;
       memset(userInput, 0, sizeof(userInput) / sizeof(*userInput));
@@ -51,6 +53,7 @@ void Display::Show() {
       keyIn = 0;
       calibrationCounter = 0;
       resetCounter = 0;
+      calibrationMode = 0;
       return;
     }
 
@@ -80,7 +83,7 @@ void Display::Show() {
         }
         lcd->print(calibrationLCD[calibrationCounter]);
 
-        if (resetCounter == 0) { 
+        if (resetCounter == 0) {
           resetCounter = 1;
         }
         else if (resetCounter == 2) {
@@ -116,14 +119,17 @@ void Display::Show() {
       counter = 0;
       calibrationCounter = 0;
       resetCounter = 0;
+      calibrationMode = 0x04 | calibrationMode;
     }
     else if (keyIn != '#' && counter > 1) {
       counter = 0;
+      char buff[32];
       calibrationCounter = 0;
+      sprintf(buff, "MAXIMUM IS %dU", (int)maximumDesiredPos);
       memset(userInput, 0, sizeof(userInput) / sizeof(*userInput));
       //lcd->clear();
       lcd->setCursor(0, 0);
-      lcd->print("MAXIMUM IS 40U");
+      lcd->print(buff);
       resetCounter = 0;
     }
     else if (keyIn == '#' && counter >= 1) {
@@ -135,6 +141,7 @@ void Display::Show() {
       memset(userInput, 0, sizeof(userInput) / sizeof(*userInput));
       calibrationCounter = 0;
       resetCounter = 0;
+      calibrationMode = 0x04 | calibrationMode;
     }
 
     keyIn = 0;
@@ -145,6 +152,7 @@ void Display::Show() {
     downSwitchFlag = false;
 
   } else if (digitalRead(MANUAL_TOGGLE) == HIGH) {
+    calibrationMode = 4;
     calibrationCounter = 0;
     resetCounter = 0;
     if (manualPrintFlag == false) {
@@ -177,30 +185,35 @@ void Display::Show() {
       lcd->print("MANUAL MODE");
     }
   }
-
-  //trimmerValue = analogRead(TRIMMER_CHANNEL) / 1000.0f;
-  if (desiredPositionTemp <= MAXIMUM_HEIGHT) {
+  //trimmerValue = analogRead(TRIMMER_CHANNEL) / 250.0f;
+  if (desiredPositionTemp <= maximumDesiredPos) {
     if (digitalRead(MANUAL_TOGGLE) == HIGH) {
       if (digitalRead(UP_SWITCH) == HIGH) {
-        floatingPointIncrement += 0.01f;
+        floatingPointIncrement += 0.07f;
       } else if (digitalRead(DOWN_SWITCH) == HIGH) {
-        floatingPointIncrement -= 0.01f;
+        
+        floatingPointIncrement -= 0.07f;
       }
+
+      floatingPointIncrement = constrain(floatingPointIncrement, -40.0f, 40.0f);
     }
     desiredPosition = (float)(desiredPositionTemp) + floatingPointIncrement;// + trimmerValue;
-    desiredPosition = constrain(desiredPosition, 0.0f, MAXIMUM_HEIGHT);
+    desiredPosition = constrain(desiredPosition, 0.0f, maximumDesiredPos);
     float2Bytes.floats = desiredPosition;
     //Serial.println(desiredPosition);
     if (digitalRead(MANUAL_TOGGLE) == LOW) {
-      sprintf(toShow, "%c%c.%02dU", userInput[0], userInput[1], (int)(trimmerValue * 100) % 100);
+      //sprintf(toShow, "%c%c.%02dU", userInput[0], userInput[1], (int)(trimmerValue * 100) % 100);
+      sprintf(toShow, "%c%cU", userInput[0], userInput[1]);
       lcd->setCursor(0, 0);
       lcd->print(toShow);
     }
   }
   else {
     //lcd->clear();
+    char buff[32];
+    sprintf(buff, "MAXIMUM IS %dU", (int)maximumDesiredPos);
     lcd->setCursor(0, 0);
-    lcd->print("MAXIMUM IS 40U");
+    lcd->print(buff);
     desiredPositionTemp = desiredPosition - floatingPointIncrement;// - intPart;
     //desiredPosition = (float)MAXIMUM_HEIGHT;
   }
@@ -211,11 +224,14 @@ void Display::Show() {
   Serial.print("\t");
   Serial.print(intPart);
   Serial.print("\t");
+  Serial.print(maximumDesiredPos);
+  Serial.print("\t");
   Serial.println(calibrationMode);
 
   //communicate to motor controller by receiving 'a' for synchronization, then send 0xFF 0xXX 0xXX 0xXX 0xXX as 1 header and 4 bytes desired position pressed by user
   if (Serial3.available()) {
-    if (Serial3.read() == 'a') {
+    char received = Serial3.read();
+    if (received == 'a') {
       //send the communication header
       Serial3.write(0xFF);
       //sending 4 bytes floating point as user's input
@@ -223,16 +239,17 @@ void Display::Show() {
         Serial3.write(float2Bytes.bytes[i]);
       }
       Serial3.write(calibrationMode);
-      if (calibrationMode > 0) {
-        calibrationMode = 0;
-      }
+      if (calibrationMode > 0)
+        calibrationMode = 4;
     }
 
-    if (Serial3.read() == 's') {
-      while (Serial.read() != 0xFF);
+    else if (received == 's') {
+      while (Serial3.read() != 0xFF);
       for (uint8_t i = 0; i < 4; ++i) {
         highestDesiredPosition.bytes[i] = Serial3.read();
       }
+
+      maximumDesiredPos = highestDesiredPosition.floats;
     }
   }
 }
