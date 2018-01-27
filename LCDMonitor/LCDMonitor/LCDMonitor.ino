@@ -1,17 +1,14 @@
-#include "Display.h"
+#include "LifterLCD.h"
 
-Display *display;
+//Display *display;
+LifterLCD *lifterLCD;
 
 void setup() {
-  // set up the LCD's number of columns and rows:
-  display = new Display();
-  //Serial.begin(9600);
+  // set up the LCD's number of columns and rows:  
+  lifterLCD = new LifterLCD();
   
 }
 
 void loop() {
-  //display->Test();
-  // set the cursor to column 0, line 1
-  display->Show();  
-  //Serial.println("test");
+  lifterLCD->UpdateDisplay();  
 }

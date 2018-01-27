@@ -26,6 +26,7 @@ class Display {
   private:
     Float2Bytes float2Bytes;
     Float2Bytes highestDesiredPosition;
+    Float2Bytes motorDirectOutput;
     UserInput *userKeypad;
     LiquidCrystal *lcd;
     const int rs = 48, en = 44, d4 = 34, d5 = 32, d6 = 30, d7 = 28;

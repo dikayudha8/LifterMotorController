@@ -152,7 +152,7 @@ void Display::Show() {
     downSwitchFlag = false;
 
   } else if (digitalRead(MANUAL_TOGGLE) == HIGH) {
-    calibrationMode = 4;
+    calibrationMode = 5; //4;
     calibrationCounter = 0;
     resetCounter = 0;
     if (manualPrintFlag == false) {
@@ -190,8 +190,8 @@ void Display::Show() {
     if (digitalRead(MANUAL_TOGGLE) == HIGH) {
       if (digitalRead(UP_SWITCH) == HIGH) {
         floatingPointIncrement += 0.07f;
-      } else if (digitalRead(DOWN_SWITCH) == HIGH) {
         
+      } else if (digitalRead(DOWN_SWITCH) == HIGH) {
         floatingPointIncrement -= 0.07f;
       }
 
@@ -239,8 +239,10 @@ void Display::Show() {
         Serial3.write(float2Bytes.bytes[i]);
       }
       Serial3.write(calibrationMode);
-      if (calibrationMode > 0)
+      if (calibrationMode > 0 && calibrationMode < 5)
         calibrationMode = 4;
+      else if (calibrationMode == 5)
+        calibrationMode = 5;
     }
 
     else if (received == 's') {
