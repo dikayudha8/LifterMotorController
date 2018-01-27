@@ -9,6 +9,8 @@ UserInput::UserInput() {
   pinMode(MANUAL_TOGGLE, INPUT);
   pinMode(UP_SWITCH, INPUT);
   pinMode(DOWN_SWITCH, INPUT);
+
+  serialCommand->SendMotorOn(false);
 }
 
 UserInput::~UserInput() {
@@ -56,6 +58,7 @@ char* UserInput::ReadUserInput() {
         //send the desired Command and moving command
         desiredPositionInFloat = desiredPosition * U_PER_COUNT;
         desiredPositionToSend = (unsigned int) desiredPositionInFloat;
+        serialCommand->SendMotorOn(true);
         serialCommand->SendDesiredPositionCommand(desiredPositionToSend);
       }
     }
@@ -72,6 +75,7 @@ char* UserInput::ReadUserInput() {
         operationMode = RESET_CALIBRATION;
         calibrationCounter = 0;
         //send reset command and stop moving command
+        serialCommand->SendMotorOn(false);
         serialCommand->SendCalibrationCommand(true);
       }
 
@@ -82,6 +86,7 @@ char* UserInput::ReadUserInput() {
         printLCDStatus = CALIBRATING;
         operationMode = CALIBRATING;
         //send calibration command and stop moving command
+        serialCommand->SendMotorOn(false);
         serialCommand->SendResetCalibrationCommand(true);
       }
     }
@@ -98,10 +103,12 @@ char* UserInput::ReadUserInput() {
     if (digitalRead(UP_SWITCH) == HIGH) {
       printLCDStatus = MOVING_UP;
       //send the offset command and moving command
+      serialCommand->SendMotorOn(true);
       serialCommand->SendOffsetCommand(2);
     } else if (digitalRead(DOWN_SWITCH) == HIGH) {
       printLCDStatus = MOVING_DOWN;
       //send the offset command and moving command
+      serialCommand->SendMotorOn(true);
       serialCommand->SendOffsetCommand(-2);
     } else {
       printLCDStatus = MANUAL;
