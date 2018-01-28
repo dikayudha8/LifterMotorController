@@ -28,7 +28,7 @@ enum {
   DEFAULT_
 };
 
-union Int2Byte {
+typedef union Int2Byte {
   int integer;
   byte bytes[2];
 };

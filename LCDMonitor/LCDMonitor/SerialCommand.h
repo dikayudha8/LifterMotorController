@@ -13,7 +13,7 @@
 #define SEND_RESET_CALIBRATION  5
 #define SEND_ENCODER_REQUEST  6
 
-typedef union IntToBytes {
+union IntToBytes {
   uint16_t integer;
   uint8_t bytes[2];
 };
@@ -30,7 +30,7 @@ class SerialCommand {
     void SendOffsetCommand(uint8_t offset);
 
   private:
-    void SendCommand(uint8_t mode, uint16_t value, bool readOrWrite = WRITE);
+    void SendCommand(uint8_t mode, uint8_t motorOn, uint16_t value, bool readOrWrite = WRITE);
     bool DEBUG = DEBUG_OFF;
 };
 
