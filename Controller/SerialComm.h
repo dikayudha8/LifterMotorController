@@ -49,6 +49,10 @@ class SerialComm {
       return offset;
     };
 
+    void ClearOffset(){
+      offset = 0;
+    }
+    
     uint16_t getResetCalibrationStatus() {
       return resetCalibrationStatus;
     };

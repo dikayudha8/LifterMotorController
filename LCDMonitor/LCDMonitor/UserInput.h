@@ -86,6 +86,7 @@ class UserInput {
     long diff;
     uint8_t direction;
     bool switchState = false;
+    long timeBefore = 0L;
 };
 
 

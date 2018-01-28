@@ -50,14 +50,14 @@ void SerialCommand::SendCalibrationCommand(bool calibrate) {
 void SerialCommand::SendResetCalibrationCommand(bool resetCalibration) {
   SendCommand(SEND_RESET_CALIBRATION, 0, resetCalibration);
 }
-void SerialCommand::SendDesiredPositionCommand(uint16_t desiredPosition) {
-  SendCommand(SEND_DESIRED_POSITION, 1, desiredPosition);
+void SerialCommand::SendDesiredPositionCommand(uint16_t desiredPosition, uint8_t motorOn) {
+  SendCommand(SEND_DESIRED_POSITION, motorOn, desiredPosition);
 }
 void SerialCommand::SendMotorOn(bool onOrOff) {
   //SendCommand(MOTOR_ON, onOrOff);
 }
 
-void SerialCommand::SendOffsetCommand(uint8_t offset) {
-  SendCommand(SEND_MOTOR_OFFSET, 1, offset);
+void SerialCommand::SendOffsetCommand(uint16_t offset, uint8_t motorOn) {
+  SendCommand(SEND_MOTOR_OFFSET, motorOn, offset);
 }
 

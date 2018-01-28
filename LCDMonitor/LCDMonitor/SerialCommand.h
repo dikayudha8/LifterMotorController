@@ -25,9 +25,9 @@ class SerialCommand {
 
     void SendCalibrationCommand(bool calibrate);
     void SendResetCalibrationCommand(bool resetCalibration);
-    void SendDesiredPositionCommand(uint16_t desiredPosition);
+    void SendDesiredPositionCommand(uint16_t desiredPosition, uint8_t motorOn);
     void SendMotorOn(bool onOrOff);
-    void SendOffsetCommand(uint8_t offset);
+    void SendOffsetCommand(uint16_t offset, uint8_t motorOn);
 
   private:
     void SendCommand(uint8_t mode, uint8_t motorOn, uint16_t value, bool readOrWrite = WRITE);
