@@ -15,7 +15,7 @@ SerialCommand::~SerialCommand() {
 void SerialCommand::SendCommand(uint8_t mode, uint8_t motorOn, uint16_t value, bool readOrWrite = WRITE) {
   IntToBytes converter;
   converter.integer = value;
-  int sumForCheckSum = 0xFF + readOrWrite + mode + motorOn + converter.bytes[0] + converter.bytes[1];
+  int sumForCheckSum = readOrWrite + mode + motorOn + converter.bytes[0] + converter.bytes[1];
   uint8_t checkSum = ~sumForCheckSum;
   if (DEBUG == true) {
     Serial.print(0xFF, HEX);
