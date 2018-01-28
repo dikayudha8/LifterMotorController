@@ -55,12 +55,14 @@ uint16_t Encoder::ReadEEPROM(uint8_t address) {
   }
 }
 uint8_t Encoder::ResetCalibration() {
+  newDesiredPosition = rackHeightOffset + rackHeightCalibrated;
   WriteEEPROM(CALIBRATION_OFFSET_ADDR, 0);
   rackHeightOffset = 0;
   return 1;
 }
 
 uint8_t Encoder::Calibrate() {
+  newDesiredPosition = 0;
   WriteEEPROM(CALIBRATION_OFFSET_ADDR, rackHeight);
   rackHeightOffset = rackHeight;
   return 1;
@@ -93,7 +95,7 @@ void Encoder::ReadEncoder() {
   rackHeightRaw = result;
   rackHeightFiltered = ((HIGHPASS * rackHeightFiltered) + (LOWPASS * (float)rackHeightRaw));
   rackHeight = ((unsigned int) rackHeightFiltered) - initialOffset;
-  rackHeightCalibrated = rackHeightRaw - rackHeightOffset;
+  rackHeightCalibrated = rackHeight - rackHeightOffset;
   calibratedMaxHeight = (RAWMAXHEIGHT - (rackHeightOffset + initialOffset));
 }
 

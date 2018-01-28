@@ -25,9 +25,22 @@ class Encoder {
     uint8_t ReadCalibratedOffset();
     uint8_t ReadInitialOffset();
     uint8_t InitialOffsetCalibration();
+
+    uint16_t GetCalibratedMaxHeight(){
+      return calibratedMaxHeight;
+    };
+
+    uint16_t GetRackHeight(){
+      return rackHeightCalibrated;
+    };
+
+    uint16_t GetNewDesiredPosition(){
+      return newDesiredPosition;
+    }
   private:
     uint16_t rackHeight;
     uint16_t rackHeightRaw;
+    uint16_t newDesiredPosition;
     float rackHeightFiltered;
     uint16_t initialOffset;
     uint16_t RAWMAXHEIGHT;
