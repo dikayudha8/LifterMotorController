@@ -26,7 +26,8 @@ enum {
   MANUAL,
   MOVING_UP,
   MOVING_DOWN,
-  DEFAULT_
+  DEFAULT_,
+  GO_TO_DESIRED
 };
 
 typedef union Int2Byte {
@@ -88,7 +89,7 @@ class UserInput {
     uint8_t direction;
     bool switchState = false;
     long timeBefore = 0L;
-    long timeBeforeSwitch = 0L;
+    long timeBeforeAutoMode = 0L;
     bool firstBoot = true;
 };
 

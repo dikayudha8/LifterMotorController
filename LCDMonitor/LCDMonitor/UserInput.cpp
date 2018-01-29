@@ -59,10 +59,11 @@ char* UserInput::ReadUserInput() {
         desiredPositionInFloat = ((float)desiredPosition) * U_PER_COUNT;
         desiredPositionToSend = (unsigned int) desiredPositionInFloat;
         //serialCommand->SendMotorOn(true);
-        for (uint8_t i = 0; i < ATTEMPT; ++i) {
-          serialCommand->SendDesiredPositionCommand(desiredPositionToSend, 1);
-          delay(10);
-        }
+        operationMode = GO_TO_DESIRED;
+//        for (uint8_t i = 0; i < ATTEMPT; ++i) {
+//          serialCommand->SendDesiredPositionCommand(desiredPositionToSend, 1);
+//          delay(10);
+//        }
         //Serial.println(desiredPositionToSend);
       }
     }
@@ -80,10 +81,10 @@ char* UserInput::ReadUserInput() {
         calibrationCounter = 0;
         //send reset command and stop moving command
         //serialCommand->SendMotorOn(false);
-        for (uint8_t i = 0; i < ATTEMPT; ++i) {
-          serialCommand->SendResetCalibrationCommand(true);
-          delay(10);
-        }
+//        for (uint8_t i = 0; i < ATTEMPT; ++i) {
+//          serialCommand->SendResetCalibrationCommand(true);
+//          delay(10);
+//        }
       }
 
       if (calibrationCounter > 3) {
@@ -94,11 +95,11 @@ char* UserInput::ReadUserInput() {
         operationMode = CALIBRATING;
         //send calibration command and stop moving command
         //serialCommand->SendMotorOn(false);
-        for (uint8_t i = 0; i < ATTEMPT; ++i) {
-          serialCommand->SendCalibrationCommand(true);
-          delay(10);
-        }
-      }
+//        for (uint8_t i = 0; i < ATTEMPT; ++i) {
+//          serialCommand->SendCalibrationCommand(true);
+//          delay(10);
+//        }
+      }      
     }
     else if (key == '*') {
       printLCDStatus = CANCEL;
@@ -106,6 +107,23 @@ char* UserInput::ReadUserInput() {
       counter = 0;
       resetCalibrationCounter = 0;
       calibrationCounter = 0;
+    }
+
+    if(millis() - timeBeforeAutoMode >= 10){
+      if(operationMode == GO_TO_DESIRED){
+        serialCommand->SendDesiredPositionCommand(desiredPositionToSend, 1);
+        Serial.println("GO TO DESIRED POSITION");
+      } else if (operationMode == CALIBRATING){
+        serialCommand->SendCalibrationCommand(true);
+        operationMode = NORMAL;
+        Serial.println("CALIBRATION");
+      } else if (operationMode == RESET_CALIBRATION){
+        serialCommand->SendResetCalibrationCommand(true);
+        operationMode = NORMAL;
+        Serial.println("RESET");
+      }
+      
+      timeBeforeAutoMode = millis();
     }
   } else {
     switchState = false;

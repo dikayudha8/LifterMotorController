@@ -3,7 +3,7 @@
 PID::PID(uint8_t kp, uint8_t ki, uint8_t kd){
   pinMode(MOTOR_OUT, OUTPUT);
   analogWrite(MOTOR_OUT, MOTOR_STOP); 
-  error = new int[3];
+  error = new float[3];
   outputPID = new uint16_t[3];
 
   memset(error, 0, sizeof(error)/sizeof(*error));
@@ -15,10 +15,10 @@ PID::~PID(){
 }
 
 int PID::ComputePID(int desiredPosition, int currentPosition){    
-  error[CURRENT] = desiredPosition - currentPosition;  
-  int pidOut = (kp*error[CURRENT]);
+  error[CURRENT] = (desiredPosition - currentPosition);  
+  float pidOut = (1.5*error[CURRENT]);
   pidOut = constrain(pidOut, -PWM_MID, PWM_MID);
-  outputPID[CURRENT] = PWM_MID + (pidOut);
+  outputPID[CURRENT] = PWM_MID + ((int)pidOut);
   outputPID[CURRENT] = constrain(outputPID[CURRENT], PWM_MIN, PWM_MAX);
 //  Serial.print(error[CURRENT]);
 //  Serial.print("\t");

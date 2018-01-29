@@ -43,7 +43,7 @@ class PID {
     
   private:
     int *outputPID;
-    int *error;
+    float *error;
     int currentPosition = 0;
     int desiredPosition = 0;
     uint8_t kp = KP; uint8_t ki = KI; uint8_t kd = KD;
