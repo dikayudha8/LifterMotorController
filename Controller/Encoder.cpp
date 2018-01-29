@@ -21,32 +21,41 @@ Encoder::~Encoder() {
 
 void Encoder::WriteEEPROM(uint8_t address, uint16_t valueToWrite) {
   IntToBytes intToBytes;
-  uint8_t checkSum;
+  char checkSum;
   intToBytes.integer = valueToWrite;
   for (uint8_t i = 0; i < 3; ++i) {
     if (i < 2) {
       EEPROM.write(i + address, intToBytes.bytes[i]);
-      checkSum += intToBytes.bytes[i];
+      //checkSum += intToBytes.bytes[i];
+      //Serial.print(intToBytes.bytes[i], HEX);
+      //Serial.print(" ");
     } else {
-      checkSum = ~checkSum;
+      checkSum = ~(intToBytes.bytes[0] + intToBytes.bytes[1]);
       EEPROM.write(i + address, checkSum);
     }
   }
+  //Serial.print(" ");
+  //Serial.println(checkSum, HEX);
 }
 
-uint16_t Encoder::ReadEEPROM(uint8_t address) {
+int Encoder::ReadEEPROM(uint8_t address) {
   IntToBytes intToBytes;
   uint8_t readFromEEPROM[3];
-  uint8_t checkSum, validateCheckSum;
+  char checkSum, validateCheckSum;
   for (uint8_t i = 0; i < 3; ++i) {
     readFromEEPROM[i] = EEPROM.read(i + address);
     if (i < 2) {
       intToBytes.bytes[i] = readFromEEPROM[i];
-      validateCheckSum += readFromEEPROM[i];
+      //validateCheckSum += readFromEEPROM[i];
+      //Serial.print(intToBytes.bytes[i], HEX);
+      //Serial.print(" ");
     }
   }
-  validateCheckSum = ~validateCheckSum;
+  validateCheckSum = ~(readFromEEPROM[0] + readFromEEPROM[1]);
   checkSum = readFromEEPROM[2];
+  //Serial.print(checkSum, HEX);
+  //Serial.print(" ");
+  //Serial.println(validateCheckSum, HEX);
   if (checkSum == validateCheckSum) {
     uint16_t output = intToBytes.integer;
     return output;
@@ -97,5 +106,7 @@ void Encoder::ReadEncoder() {
   rackHeight = ((unsigned int) rackHeightFiltered) - initialOffset;
   rackHeightCalibrated = rackHeight - rackHeightOffset;
   calibratedMaxHeight = (RAWMAXHEIGHT - (rackHeightOffset + initialOffset));
+
+  rackHeightCalibrated = constrain(rackHeightCalibrated, 0, calibratedMaxHeight);
 }
 

@@ -53,7 +53,7 @@ void LifterLCD::UpdateDisplay() {
       Show("MANUAL MODE");
     } else if (userInput->getPrintLCDStatus() == MOVING_UP) {
       lcd->clear();
-      Show("MOVING_UP");
+      Show("MOVING UP");
     } else if (userInput->getPrintLCDStatus() == MOVING_DOWN) {
       lcd->clear();
       Show("MOVING DOWN");

@@ -12,16 +12,20 @@
 #define SEND_CALIBRATION  4
 #define SEND_RESET_CALIBRATION  5
 #define SEND_ENCODER_REQUEST  6
+#define SEND_INITIAL_OFFSET 7
+
+#define SYNCH_PIN 6
 
 enum {
   SUCCESS,
   CHECKSUM_INVALID,
-  TIMEOUT
+  TIMEOUT,
+  NOTHING
 };
 
 typedef union IntToBytes {
-  uint16_t integer;
-  uint8_t bytes[2];
+  int integer;
+  char bytes[2];
 };
 
 class SerialComm {
@@ -37,6 +41,10 @@ class SerialComm {
       return mode;
     };
 
+    void clearMode(){
+      mode = 0;
+    }
+
     uint8_t getCheckSum() {
       return checkSum;
     };
@@ -45,7 +53,7 @@ class SerialComm {
       return desiredPosition;
     };
 
-    uint16_t getOffset() {
+    int getOffset() {
       return offset;
     };
 
@@ -66,19 +74,23 @@ class SerialComm {
     };
 
     uint8_t Receiving();
-
+    uint8_t ReceivingDebugMode();
+    void ReadingBytes(uint8_t data);
   private:
-    uint8_t readOrWrite;
-    uint8_t motorOn;
-    uint8_t mode;
-    uint8_t checkSum;
-    uint16_t desiredPosition;
-    uint16_t offset;
-    uint16_t resetCalibrationStatus;
-    uint16_t calibrationStatus;
+    uint8_t readOrWrite = 0;
+    uint8_t motorOn = 0;
+    uint8_t mode = 0;
+    uint8_t checkSum = 0;
+    int desiredPosition = 0;
+    int offset = 0;
+    uint16_t resetCalibrationStatus = 0;
+    uint16_t calibrationStatus = 0;
     bool DEBUG = DEBUG_MODE;
     long timeNow = 0L;
     long timeBefore = 0L;
     bool saveFirstTiming = true;
+    uint8_t readState = 0;
+    int rawData[16];
+    uint8_t rawDataCounter = 0;
 };
 

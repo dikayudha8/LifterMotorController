@@ -6,6 +6,7 @@ SerialCommand::SerialCommand() {
   } else {
     Serial3.begin(115200);
   }
+  pinMode(LED_INPUT, INPUT);
 }
 
 SerialCommand::~SerialCommand() {
@@ -15,10 +16,12 @@ SerialCommand::~SerialCommand() {
 void SerialCommand::SendCommand(uint8_t mode, uint8_t motorOn, uint16_t value, bool readOrWrite = WRITE) {
   IntToBytes converter;
   converter.integer = value;
-  int sumForCheckSum = readOrWrite + mode + motorOn + converter.bytes[0] + converter.bytes[1];
+  uint8_t sumForCheckSum = readOrWrite + mode + motorOn + converter.bytes[0] + converter.bytes[1];
   uint8_t checkSum = ~sumForCheckSum;
   if (DEBUG == true) {
     Serial.print(0xFF, HEX);
+    Serial.print(" ");
+    Serial.print(0xDE, HEX);
     Serial.print(" ");
     Serial.print(readOrWrite, HEX);
     Serial.print(" ");
@@ -30,9 +33,14 @@ void SerialCommand::SendCommand(uint8_t mode, uint8_t motorOn, uint16_t value, b
       Serial.print(converter.bytes[i], HEX);
       Serial.print(" ");
     }
-    Serial.println(checkSum, HEX);
+    Serial.print(checkSum, HEX);
+    Serial.print(" ");
+    Serial.print(0xFE, HEX);
+    Serial.print(" ");
+    Serial.println(digitalRead(6));
   } else {
     Serial3.write(0xFF);
+    Serial3.write(0xDE);
     Serial3.write(readOrWrite);
     Serial3.write(mode);
     Serial3.write(motorOn);
@@ -40,6 +48,7 @@ void SerialCommand::SendCommand(uint8_t mode, uint8_t motorOn, uint16_t value, b
       Serial3.write(converter.bytes[i]);
     }
     Serial3.write(checkSum);
+    Serial3.write(0xFE);
   }
 }
 

@@ -13,9 +13,11 @@
 #define SEND_RESET_CALIBRATION  5
 #define SEND_ENCODER_REQUEST  6
 
+#define LED_INPUT 2
+
 union IntToBytes {
-  uint16_t integer;
-  uint8_t bytes[2];
+  int integer;
+  char bytes[2];
 };
 
 class SerialCommand {

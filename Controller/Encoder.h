@@ -3,7 +3,7 @@
 #include <EEPROM.h>
 #include "SerialComm.h"
 
-#define RAWMAXHEIGHTDIFF 3067
+#define RAWMAXHEIGHTDIFF 3000
 #define SS 10
 #define MISO 12
 #define CLK 13
@@ -26,28 +26,28 @@ class Encoder {
     uint8_t ReadInitialOffset();
     uint8_t InitialOffsetCalibration();
 
-    uint16_t GetCalibratedMaxHeight(){
+    int GetCalibratedMaxHeight(){
       return calibratedMaxHeight;
     };
 
-    uint16_t GetRackHeight(){
+    int GetRackHeight(){
       return rackHeightCalibrated;
     };
 
-    uint16_t GetNewDesiredPosition(){
+    int GetNewDesiredPosition(){
       return newDesiredPosition;
     }
   private:
-    uint16_t rackHeight;
-    uint16_t rackHeightRaw;
-    uint16_t newDesiredPosition;
-    float rackHeightFiltered;
-    uint16_t initialOffset;
-    uint16_t RAWMAXHEIGHT;
-    uint16_t rackHeightOffset;
-    uint16_t rackHeightCalibrated;
-    uint16_t calibratedMaxHeight;
-    uint16_t ReadEEPROM(uint8_t address);
+    int rackHeight = 0;
+    int rackHeightRaw = 0;
+    int newDesiredPosition = 0;
+    float rackHeightFiltered = 0.0f;
+    int initialOffset = 0;
+    int RAWMAXHEIGHT = 0;
+    int rackHeightOffset = 0;
+    int rackHeightCalibrated = 0;
+    int calibratedMaxHeight = 0;
+    int ReadEEPROM(uint8_t address);
     void WriteEEPROM(uint8_t address, uint16_t valueToWrite);
 };
 

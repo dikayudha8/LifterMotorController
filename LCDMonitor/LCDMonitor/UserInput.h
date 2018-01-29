@@ -16,6 +16,7 @@
 
 #define U_PER_COUNT 75.73164660491116f
 
+#define ATTEMPT 5
 enum {
   NORMAL,  
   WARNING,
@@ -30,7 +31,7 @@ enum {
 
 typedef union Int2Byte {
   int integer;
-  byte bytes[2];
+  char bytes[2];
 };
 
 class UserInput {
@@ -87,6 +88,8 @@ class UserInput {
     uint8_t direction;
     bool switchState = false;
     long timeBefore = 0L;
+    long timeBeforeSwitch = 0L;
+    bool firstBoot = true;
 };
 
 
