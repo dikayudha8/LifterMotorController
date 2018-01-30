@@ -14,16 +14,16 @@ ServerLifter::~ServerLifter() {
 
 void ServerLifter::RunServerLifter() {
   uint8_t motorOutVal = 128;
-  if(serialComm->Receiving() == CHECKSUM_INVALID){
-    digitalWrite(13, HIGH);  
+  if (DEBUG_SERIAL == true) {
+    serialComm->ReceivingDebugMode();
   } else {
-    digitalWrite(13,LOW);
+    serialComm->Receiving();
   }
   uint8_t tempMotorOn = serialComm->getMotorOn();
   uint8_t tempMode = serialComm->getMode();
 
   if (millis() - timeBefore >= UPDATE_RATE) {
-    encoder->ReadEncoder();    
+    encoder->ReadEncoder();
     if (tempMode == SEND_DESIRED_POSITION) {
       serialComm->ClearOffset();
       tempDesiredPos = serialComm->getDesiredPosition();
@@ -59,19 +59,27 @@ void ServerLifter::RunServerLifter() {
       tempCounter = 0;
       //test = !test;
       //digitalWrite(6, test);
-//      Serial.print(tempMode);
-//      Serial.print("\t");
-//      Serial.print(tempMotorOn);
-//      Serial.print("\t");
-//      Serial.print(tempDesiredPos);
-//      Serial.print("\t");
-//      Serial.print(serialComm->getOffset());
-//      Serial.print("\t");
-//      Serial.print(encoder->GetRackHeight());
-//      Serial.print("\t");
-//      Serial.print(encoder->GetCalibratedMaxHeight());
-//      Serial.print("\t");
-//      Serial.println(motorOutVal);
+      if (DEBUG_SERIAL == true) {
+        Serial.print(tempMode);
+        Serial.print("\t");
+        Serial.print(tempMotorOn);
+        Serial.print("\t");
+        Serial.print(tempDesiredPos);
+        Serial.print("\t");
+        Serial.print(serialComm->getOffset());
+        Serial.print("\t");
+        Serial.print(encoder->GetRackHeight());
+        Serial.print("\t");
+        Serial.print(encoder->GetCalibratedMaxHeight());
+        Serial.print("\t");
+        Serial.print(pid->outputPID[CURRENT]);
+        Serial.print("\t");
+        Serial.print(pid->error[PREVIOUS]);
+        Serial.print("\t");
+        Serial.println(pid->dt);
+      } else {
+        
+      }
     }
     timeBefore = millis();
   }

@@ -91,6 +91,6 @@ class SerialComm {
     bool saveFirstTiming = true;
     uint8_t readState = 0;
     int rawData[16];
-    uint8_t rawDataCounter = 0;
+    uint8_t rawDataCounter = 0;    
 };
 

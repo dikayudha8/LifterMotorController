@@ -19,6 +19,9 @@ UserInput::~UserInput() {
 }
 
 char* UserInput::ReadUserInput() {
+  adcRaw = analogRead(ADC) - ADC_MID;
+  adcConverted = adcRaw/TRIMMER_LEVEL;
+  trimmer = (int) adcConverted;  
   if (digitalRead(MANUAL_TOGGLE) == HIGH) {
     if (switchState == false) {
       printLCDStatus = DEFAULT_;
@@ -111,13 +114,19 @@ char* UserInput::ReadUserInput() {
 
     if(millis() - timeBeforeAutoMode >= 10){
       if(operationMode == GO_TO_DESIRED){
-        serialCommand->SendDesiredPositionCommand(desiredPositionToSend, 1);
-        Serial.println("GO TO DESIRED POSITION");
+        int toSend = desiredPositionToSend + trimmer;
+        toSend = constrain(toSend, 0, MAX_DESIRED_COUNTS);
+        serialCommand->SendDesiredPositionCommand(toSend, 1);
+        Serial.println(toSend);
       } else if (operationMode == CALIBRATING){
+        serialCommand->SendCalibrationCommand(true);
+        delay(10);
         serialCommand->SendCalibrationCommand(true);
         operationMode = NORMAL;
         Serial.println("CALIBRATION");
       } else if (operationMode == RESET_CALIBRATION){
+        serialCommand->SendResetCalibrationCommand(true);
+        delay(10);
         serialCommand->SendResetCalibrationCommand(true);
         operationMode = NORMAL;
         Serial.println("RESET");

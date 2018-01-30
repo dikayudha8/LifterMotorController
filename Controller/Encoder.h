@@ -11,7 +11,7 @@
 #define INITIAL_OFFSET_ADDR 32
 #define CALIBRATION_OFFSET_ADDR 16
 
-#define LOWPASS 0.1f
+#define LOWPASS 0.05f
 #define HIGHPASS (1.0f - LOWPASS)
 
 class Encoder {

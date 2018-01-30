@@ -6,7 +6,12 @@
 #define ROWS 4
 #define COLUMNS 3
 #define MAXIMUM_HEIGHT 40
-
+#define ADC 0
+#define ADC_MIN 0//28
+#define ADC_MAX 1023
+#define ADC_DIFF (ADC_MAX - ADC_MIN)
+#define ADC_MID ADC_DIFF/2
+#define TRIMMER_LEVEL 13
 #define ENC_A 2
 #define ENC_B 3
 
@@ -14,8 +19,8 @@
 #define UP_SWITCH 5
 #define DOWN_SWITCH 6
 
-#define U_PER_COUNT 75.73164660491116f
-
+#define U_PER_COUNT 80.010000000000000000000000000002f
+#define MAX_DESIRED_COUNTS MAXIMUM_HEIGHT * U_PER_COUNT
 #define ATTEMPT 5
 enum {
   NORMAL,  
@@ -91,6 +96,9 @@ class UserInput {
     long timeBefore = 0L;
     long timeBeforeAutoMode = 0L;
     bool firstBoot = true;
+    int adcRaw = 0;
+    float adcConverted = 0.0f;
+    int trimmer = 0;
 };
 
 

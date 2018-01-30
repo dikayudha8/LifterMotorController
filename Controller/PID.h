@@ -23,7 +23,7 @@ class PID {
     PID(uint8_t kp, uint8_t ki, uint8_t kd);
     ~PID();
 
-    int ComputePID(int desiredPosition, int currentPosition);
+    long int ComputePID(int desiredPosition, int currentPosition);
     
     void SetDesiredPosition(uint16_t dPos) {
       desiredPosition = dPos;
@@ -40,10 +40,12 @@ class PID {
     uint8_t GetetCurrentPosition() {
       return currentPosition;
     };
-    
+    long *error;
+    int dt;
+    long *outputPID;
   private:
-    int *outputPID;
-    float *error;
+    
+//    float *error;
     int currentPosition = 0;
     int desiredPosition = 0;
     uint8_t kp = KP; uint8_t ki = KI; uint8_t kd = KD;

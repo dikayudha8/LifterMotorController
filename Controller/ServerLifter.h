@@ -3,13 +3,14 @@
 
 #define UPDATE_RATE 5
 
-class ServerLifter{
+class ServerLifter {
   public:
     ServerLifter();
     ~ServerLifter();
 
     void RunServerLifter();
   private:
+    bool DEBUG_SERIAL = false;
     Encoder *encoder;
     SerialComm *serialComm;
     PID *pid;
@@ -17,7 +18,7 @@ class ServerLifter{
     int tempDesiredPos = 0;
     int tempOffset = 0;
     uint8_t tempCounter = 0;
-//    uint8_t tempMode;
+    //    uint8_t tempMode;
     bool test = false;
 };
 
