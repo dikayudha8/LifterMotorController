@@ -20,8 +20,11 @@ UserInput::~UserInput() {
 
 char* UserInput::ReadUserInput() {
   adcRaw = analogRead(ADC) - ADC_MID;
-  adcConverted = adcRaw/TRIMMER_LEVEL;
-  trimmer = (int) adcConverted;  
+  //adcConverted = adcRaw/TRIMMER_LEVEL;
+  long trimmerLong = HALF_U_PER_COUNT/1000000;
+  long trimmerTemp = ADC_MID/trimmerLong;
+  trimmer = (int) adcRaw/trimmerTemp;  
+  //Serial.println(trimmer);
   if (digitalRead(MANUAL_TOGGLE) == HIGH) {
     if (switchState == false) {
       printLCDStatus = DEFAULT_;
@@ -51,7 +54,7 @@ char* UserInput::ReadUserInput() {
       resetCalibrationCounter = 0;
       counter = 0;
       desiredPositionTemp = atoi(userInput);
-      if (desiredPositionTemp >= MAXDESIREDPOS ) {
+      if (desiredPositionTemp > MAXDESIREDPOS ) {
         desiredPositionTemp = 0;
         printLCDStatus = WARNING;
         memset(userInput, 0, sizeof(userInput) / sizeof(*userInput));
@@ -59,8 +62,14 @@ char* UserInput::ReadUserInput() {
         memset(userInput, 0, sizeof(userInput) / sizeof(*userInput));
         desiredPosition = desiredPositionTemp;
         //send the desired Command and moving command
-        desiredPositionInFloat = ((float)desiredPosition) * U_PER_COUNT;
-        desiredPositionToSend = (unsigned int) desiredPositionInFloat;
+        long desiredPositionLong = (desiredPosition * U_PER_COUNT);
+        long desiredPositionShort = desiredPositionLong/100000;
+        
+        //desiredPositionInFloat = ((float)desiredPosition) * U_PER_COUNT;
+        desiredPositionToSend = (unsigned int) desiredPositionShort;
+//        Serial.print(trimmer);
+//        Serial.print("\t");
+//        Serial.println(desiredPositionToSend);
         //serialCommand->SendMotorOn(true);
         operationMode = GO_TO_DESIRED;
 //        for (uint8_t i = 0; i < ATTEMPT; ++i) {
@@ -117,7 +126,7 @@ char* UserInput::ReadUserInput() {
         int toSend = desiredPositionToSend + trimmer;
         toSend = constrain(toSend, 0, MAX_DESIRED_COUNTS);
         serialCommand->SendDesiredPositionCommand(toSend, 1);
-        Serial.println(toSend);
+        //Serial.println(toSend);
       } else if (operationMode == CALIBRATING){
         serialCommand->SendCalibrationCommand(true);
         delay(10);

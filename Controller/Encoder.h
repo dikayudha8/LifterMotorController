@@ -3,7 +3,7 @@
 #include <EEPROM.h>
 #include "SerialComm.h"
 
-#define RAWMAXHEIGHTDIFF 3000
+#define RAWMAXHEIGHTDIFF 3050
 #define SS 10
 #define MISO 12
 #define CLK 13

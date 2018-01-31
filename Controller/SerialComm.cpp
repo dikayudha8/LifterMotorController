@@ -157,11 +157,11 @@ uint8_t SerialComm::ReceivingDebugMode() {
     } else if (tempReceive == 'u') {
       motorOn = 1;
       mode = SEND_DESIRED_POSITION;
-      desiredPosition += 100;
+      desiredPosition += 1;
     } else if (tempReceive == 'i') {
       motorOn = 1;
       mode = SEND_DESIRED_POSITION;
-      desiredPosition -= 100;
+      desiredPosition -= 1;
     } else if (tempReceive == ',') {
       motorOn = 1;
       mode = SEND_MOTOR_OFFSET;
